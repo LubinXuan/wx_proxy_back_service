@@ -21,9 +21,9 @@ public enum BizQueueManager {
     private BlockingQueue<MutableTriple<String, Long, String>> bizQueue = new LinkedBlockingQueue<>();
     //历史列表任务
     private BlockingQueue<MutableTriple<String, Long, String>> hisBizQueue = new LinkedBlockingQueue<>();
-
+    //下发待检测
     private BlockingQueue<MutableTriple<String, Long, String>> dispatchTime = new LinkedBlockingQueue<>();
-
+    //对象映射
     private Map<String, MutableTriple<String, Long, String>> pairMapping = new ConcurrentHashMap<>();
 
     //60秒
