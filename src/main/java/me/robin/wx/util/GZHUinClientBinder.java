@@ -17,7 +17,7 @@ public class GZHUinClientBinder {
 
 
     public static void bind(String client, String uin) {
-        if (StringUtils.isNotBlank(uin)) {
+        if (StringUtils.isBlank(uin)) {
             return;
         }
         uinMapClient.put(uin, client);
@@ -25,14 +25,14 @@ public class GZHUinClientBinder {
     }
 
     public static String getClient(String uin) {
-        if (StringUtils.isNotBlank(uin)) {
+        if (StringUtils.isBlank(uin)) {
             return null;
         }
         return uinMapClient.get(uin);
     }
 
     public static String getUin(String client) {
-        if (StringUtils.isNotBlank(client)) {
+        if (StringUtils.isBlank(client)) {
             return null;
         }
         return clientMapUin.get(client);

@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiFunction;
 
 public class GZHAnalyse {
 
@@ -31,23 +32,22 @@ public class GZHAnalyse {
         }
     };
 
-    private Map<String, ImmutablePair<AtomicLong, AtomicLong>> recordMap = new ConcurrentHashMap<>();
+    private static final Map<String, ImmutablePair<AtomicLong, AtomicLong>> recordMap = new ConcurrentHashMap<>();
 
 
-    public static String getUinFromUrl(String url){
+    public static String getUinFromUrl(String url) {
         return StringUtils.substringBetween(url, "uin=", "&");
     }
 
-    public static String getBizFromUrl(String location){
+    public static String getBizFromUrl(String location) {
         return StringUtils.substringBetween(location, "__biz=", "&");
     }
 
-    public static String getFromMsgIdFromUrl(String location){
+    public static String getFromMsgIdFromUrl(String location) {
         return StringUtils.substringBetween(location, "frommsgid=", "&");
     }
 
     /**
-     *
      * @param msgList
      * @param url
      * @return 返回true 表示cookie失效
@@ -85,9 +85,7 @@ public class GZHAnalyse {
             isContinue = "1".equals(StringUtils.substringBetween(msgList, "\"is_continue\":", ","));
         }
 
-        if (isContinue) {
-            fromMsgId = getListMinMsgId(msgList, __biz);
-        }
+        fromMsgId = getListMinMsgId(msgList, __biz);
 
         logger.info("获取到公众号文章列表 biz:{} url:{}", __biz, url);
         if (friend && isContinue && StringUtils.isNotBlank(fromMsgId)) {
@@ -112,6 +110,16 @@ public class GZHAnalyse {
             JSONObject group = list.getJSONObject(i);
             logger.info("biz:{} msgId:{}", biz, JSONPath.eval(group, "comm_msg_info.id"));
         }
+
+        ImmutablePair<AtomicLong, AtomicLong> record = recordMap.compute(biz, (s, atomicLongAtomicLongImmutablePair) -> {
+            if (null == atomicLongAtomicLongImmutablePair) {
+                atomicLongAtomicLongImmutablePair = new ImmutablePair<>(new AtomicLong(0), new AtomicLong(0));
+            }
+            return atomicLongAtomicLongImmutablePair;
+        });
+
+        record.getLeft().incrementAndGet();
+        record.getRight().addAndGet(list.size());
 
         if (list.size() < 10) {
             return null;

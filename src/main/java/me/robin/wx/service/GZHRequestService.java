@@ -32,7 +32,11 @@ public class GZHRequestService implements Runnable, Closeable {
 
     private LinkedBlockingQueue<ImmutablePair<String, String>> requestQueue = new LinkedBlockingQueue<>();
 
-    private OkHttpClient client = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS).connectTimeout(60, TimeUnit.SECONDS).addInterceptor(new GZHUinCookieInterceptor()).build();
+    private OkHttpClient client = new OkHttpClient.Builder()
+            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            //.addInterceptor(new GZHUinCookieInterceptor())
+            .build();
 
     private volatile boolean shutdown = false;
 
@@ -55,8 +59,11 @@ public class GZHRequestService implements Runnable, Closeable {
                 } else {
                     responseContent = response.body().string();
                 }
-                if (GZHAnalyse.analyseRsp(responseContent, call.request().url().toString())) {
-                    String uin = GZHAnalyse.getUinFromUrl(call.request().url().query());
+
+                String url = call.request().url().toString();
+
+                if (GZHAnalyse.analyseRsp(responseContent, url)) {
+                    String uin = GZHAnalyse.getUinFromUrl(url);
                     logger.warn("uin:{} 获取历史cookie失效", uin);
                     GZHUinClientBinder.lock(uin);
                 }
