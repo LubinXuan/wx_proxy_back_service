@@ -3,6 +3,7 @@ package me.robin.wx.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
+import me.robin.wx.Constants;
 import me.robin.wx.util.GZHHistoryUrl;
 import me.robin.wx.util.GZHUinClientBinder;
 import me.robin.wx.util.GZHUinCookieInterceptor;
@@ -57,7 +58,7 @@ public class GZHRequestService implements Runnable, Closeable {
         public void onResponse(Call call, Response response) throws IOException {
 
             String url = call.request().url().toString();
-
+            String biz = GZHAnalyse.getBizFromUrl(url);
             String responseContent;
             try {
                 if ("deflate".equalsIgnoreCase(response.header("Content-Encoding"))) {
@@ -67,12 +68,16 @@ public class GZHRequestService implements Runnable, Closeable {
                 }
             } catch (IOException e) {
                 logger.error("公众号请求内容异常", e);
-                String biz = GZHAnalyse.getBizFromUrl(url);
+
                 String fromMsgId = GZHAnalyse.getFromMsgIdFromUrl(url);
                 BizQueueManager.INS.offerNewTask(biz, fromMsgId);
                 return;
             } finally {
                 IOUtils.closeQuietly(response);
+            }
+
+            if (Constants.REFRESH_BIZ.equalsIgnoreCase(biz)) {
+                return;
             }
 
             if (GZHAnalyse.analyseRsp(responseContent, url)) {

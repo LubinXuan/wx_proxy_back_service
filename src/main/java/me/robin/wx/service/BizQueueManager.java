@@ -1,5 +1,6 @@
 package me.robin.wx.service;
 
+import me.robin.wx.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutableTriple;
 
@@ -66,6 +67,11 @@ public enum BizQueueManager {
             dispatchTime.offer(triple);
             pairMapping.put(triple.getLeft() + "#" + triple.getRight(), triple);
         }
+
+        if (!history && null == triple) {
+            return new MutableTriple<>(Constants.REFRESH_BIZ, null, null);
+        }
+
         return triple;
     }
 
