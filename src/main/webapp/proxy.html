@@ -30,9 +30,9 @@
             options.success && options.success(json)
         };
         if (url.indexOf("?") > -1) {
-            url = url + '&t=' + new Date().getTime() + "&" + call_bak_param + "=" + callbackName
+            url = url + "&" + call_bak_param + "=" + callbackName
         } else {
-            url = url + '?t=' + new Date().getTime() + "&" + call_bak_param + "=" + callbackName
+            url = url + "?" + call_bak_param + "=" + callbackName
         }
         oS.src = url;
         if (options.timeout) {
