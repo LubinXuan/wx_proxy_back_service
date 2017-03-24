@@ -33,11 +33,18 @@ public class GZHUinCookieInterceptor implements Interceptor {
                 Request.Builder requestBuilder = request.newBuilder();
                 String cookie = request.header("cookie");
                 Map<String, String> cookieMap = uinCookieMap.get(uin);
-                StringBuilder _cookie = new StringBuilder();
+                Map<String, String> _cookieMap = new HashMap<>();
                 if (StringUtils.isNotBlank(cookie)) {
-                    _cookie.append(cookie);
+                    String[] cookies = StringUtils.split(cookie, ";");
+                    for (String str : cookies) {
+                        String[] kv = StringUtils.split(str, "=", 2);
+                        _cookieMap.put(kv[0], kv[1]);
+                    }
                 }
-                for (Map.Entry<String, String> entry : cookieMap.entrySet()) {
+                _cookieMap.putAll(cookieMap);
+
+                StringBuilder _cookie = new StringBuilder();
+                for (Map.Entry<String, String> entry : _cookieMap.entrySet()) {
                     if (_cookie.length() > 0) {
                         _cookie.append(";");
                     }
