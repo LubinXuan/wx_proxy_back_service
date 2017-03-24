@@ -74,4 +74,8 @@ public class GZHUinCookieInterceptor implements Interceptor {
         }
         return response;
     }
+
+    public void clear(String uin) {
+        uinCookieMap.remove(uin);
+    }
 }
