@@ -35,7 +35,7 @@ public class GZHRequestService implements Runnable, Closeable {
     private OkHttpClient client = new OkHttpClient.Builder()
             .readTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
-            //.addInterceptor(new GZHUinCookieInterceptor())
+            .addInterceptor(new GZHUinCookieInterceptor())
             .build();
 
     private volatile boolean shutdown = false;
