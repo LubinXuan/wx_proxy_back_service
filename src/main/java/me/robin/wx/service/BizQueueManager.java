@@ -90,4 +90,9 @@ public enum BizQueueManager {
             bizQueue.offer(new MutableTriple<>(biz, null, fromMsgId));
         }
     }
+
+
+    public boolean isEmpty() {
+        return bizQueue.isEmpty() && hisBizQueue.isEmpty() && dispatchTime.isEmpty();
+    }
 }

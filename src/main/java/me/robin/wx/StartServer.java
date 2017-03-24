@@ -7,6 +7,9 @@ import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.*;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by xuanlubin on 2017/1/5.
  */
@@ -14,10 +17,20 @@ public class StartServer {
     public static void main(String[] args) {
         try {
 
-            //BizQueueManager.INS.offerNewTask("MjM5MTgyODQ2Mw==");
-            //BizQueueManager.INS.offerNewTask("MzAxMzM4MTk2Nw==");
-            //BizQueueManager.INS.offerNewTask("MzAxMDQ2OTA1OQ==");
-            //BizQueueManager.INS.offerNewTask("MTIzNDg3NzY2MA==");
+
+            //循环测试
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if(BizQueueManager.INS.isEmpty()){
+                        BizQueueManager.INS.offerNewTask("MjM5MTgyODQ2Mw==");
+                        BizQueueManager.INS.offerNewTask("MzAxMzM4MTk2Nw==");
+                        BizQueueManager.INS.offerNewTask("MzAxMDQ2OTA1OQ==");
+                        BizQueueManager.INS.offerNewTask("MTIzNDg3NzY2MA==");
+                    }
+                }
+            }, 0, 20000);
+
 
             // 服务器的监听端口
             Server server = new Server(8080);
@@ -33,7 +46,7 @@ public class StartServer {
                     new PlusConfiguration(), new MetaInfConfiguration(),
                     new FragmentConfiguration(), new EnvConfiguration()
             });
-            context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*");
+            context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*");
             // 设置上下文路径
             context.setContextPath("/wx_proxy");
             context.setParentLoaderPriority(true);
