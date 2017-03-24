@@ -68,6 +68,7 @@ public enum BizQueueManager {
             pairMapping.put(triple.getLeft() + "#" + triple.getRight(), triple);
         }
 
+        //如果当前客户端cookie失效并且没有获取到首页任务 则下发默认任务用来刷新当前客户端的cookie
         if (!history && null == triple) {
             return new MutableTriple<>(Constants.REFRESH_BIZ, null, null);
         }
