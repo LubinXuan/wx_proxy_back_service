@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <title>公众号爬虫代理页面</title>
+</head>
+<body>
+<div id="msg"></div>
+</body>
+<script type="application/javascript">
+    var json_p = function (url, options) {
+        options = options || {};
+        options.timeout = options.timeout || 20000;//默认20S超时
+        var call_bak_param = options.jsonp || 'callback';
+        var oHead = document.getElementsByTagName('head')[0];
+        var oS = document.createElement('script');
+        var callbackName = ('jsonp_' + Math.random()).replace(".", "");
+
+        oHead.appendChild(oS);
+
+        window[callbackName] = function (json) {
+            oHead.removeChild(oS);
+            clearTimeout(oS.timer);
+            window[callbackName] = null;
+            options.success && options.success(json)
+        };
+        if (url.indexOf("?") > -1) {
+            url = url + '&t=' + new Date().getTime() + "&" + call_bak_param + "=" + callbackName
+        } else {
+            url = url + '?t=' + new Date().getTime() + "&" + call_bak_param + "=" + callbackName
+        }
+        oS.src = url;
+        if (options.timeout) {
+            oS.timer = setTimeout(function () {
+                window[callbackName] = null;
+                oHead.removeChild(oS);
+                options.error && options.error({message: "超时"});
+            }, options.timeout);
+        }
+    };
+
+    var generate_key_pass_ticket = function (bizId, fromMsgId) {
+        var url = "https://mp.weixin.qq.com/mp/getmasssendmsg?__biz=" + bizId;
+        if (fromMsgId) {
+            url = url + "&frommsgid=" + fromMsgId + "&f=json";
+        }
+        document.title = "start generate process";
+        location.href = url + "#wechat_webview_type=1&wechat_redirect";
+    };
+
+    var startTime = new Date();
+
+    var id = setInterval(function () {
+        json_p("http://yq007.adt100.com/wx_proxy/fetch", {
+            "success": function (data) {
+                var biz = data.biz;
+                var fromMsgId = data.fromMsgId;
+                if (!biz) {
+                    document.getElementById("msg").innerText = "没有找到任务";
+                } else {
+                    clearInterval(id);
+                    generate_key_pass_ticket(biz, fromMsgId)
+                }
+            },
+            "error": function () {
+                document.getElementById("msg").innerText = "通信超时~~" + startTime;
+            }
+        })
+    }, 3000, 0);
+</script>
+</html>
