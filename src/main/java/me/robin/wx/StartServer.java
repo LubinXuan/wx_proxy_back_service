@@ -14,10 +14,10 @@ public class StartServer {
     public static void main(String[] args) {
         try {
 
-            BizQueueManager.INS.offerNewTask("MjM5MTgyODQ2Mw==");
-            BizQueueManager.INS.offerNewTask("MzAxMzM4MTk2Nw==");
-            BizQueueManager.INS.offerNewTask("MzAxMDQ2OTA1OQ==");
-            BizQueueManager.INS.offerNewTask("MTIzNDg3NzY2MA==");
+            //BizQueueManager.INS.offerNewTask("MjM5MTgyODQ2Mw==");
+            //BizQueueManager.INS.offerNewTask("MzAxMzM4MTk2Nw==");
+            //BizQueueManager.INS.offerNewTask("MzAxMDQ2OTA1OQ==");
+            //BizQueueManager.INS.offerNewTask("MTIzNDg3NzY2MA==");
 
             // 服务器的监听端口
             Server server = new Server(8080);
