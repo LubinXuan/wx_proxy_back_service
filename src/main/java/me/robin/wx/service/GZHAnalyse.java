@@ -33,13 +33,24 @@ public class GZHAnalyse {
 
     private Map<String, ImmutablePair<AtomicLong, AtomicLong>> recordMap = new ConcurrentHashMap<>();
 
-    public static void analyseRsp(String msgList, String url) {
+
+    public static String getUinFromUrl(String url){
+        return StringUtils.substringBetween(url, "uin=", "&");
+    }
+
+    /**
+     *
+     * @param msgList
+     * @param url
+     * @return 返回true 表示cookie失效
+     */
+    public static boolean analyseRsp(String msgList, String url) {
         String fromMsgId = null;
         String __biz = StringUtils.substringBetween(url, "__biz=", "&");
 
         if (StringUtils.contains(msgList, "no session")) {
             BizQueueManager.INS.offerNewTask(__biz, StringUtils.substringBetween(url, "frommsgid=", "&"));
-            return;
+            return true;
         }
 
         if (StringUtils.contains(msgList, "\"type\":\"Buffer\"")) {
@@ -74,6 +85,7 @@ public class GZHAnalyse {
         if (friend && isContinue && StringUtils.isNotBlank(fromMsgId)) {
             BizQueueManager.INS.offerNewTask(__biz, fromMsgId);
         }
+        return false;
     }
 
     private static String getListMinMsgId(String msgList, String biz) {

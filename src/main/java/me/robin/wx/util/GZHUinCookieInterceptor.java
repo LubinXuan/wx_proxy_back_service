@@ -1,5 +1,6 @@
 package me.robin.wx.util;
 
+import me.robin.wx.service.GZHAnalyse;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,7 +21,7 @@ public class GZHUinCookieInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         HttpUrl httpUrl = request.url();
-        String uin = StringUtils.substringBetween(httpUrl.query(), "uin=", "&");
+        String uin = GZHAnalyse.getUinFromUrl(httpUrl.query());
         Response response;
         if (StringUtils.isNotBlank(uin)) {
             if (uinCookieMap.containsKey(uin)) {

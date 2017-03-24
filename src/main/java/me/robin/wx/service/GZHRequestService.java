@@ -7,6 +7,7 @@ import me.robin.wx.util.GZHHistoryUrl;
 import me.robin.wx.util.GZHUinCookieInterceptor;
 import okhttp3.*;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class GZHRequestService implements Runnable, Closeable {
 
     private LinkedBlockingQueue<ImmutablePair<String, String>> requestQueue = new LinkedBlockingQueue<>();
 
-    private OkHttpClient client = new OkHttpClient.Builder()/*.addInterceptor(new GZHUinCookieInterceptor())*/.build();
+    private OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new GZHUinCookieInterceptor()).build();
 
     private volatile boolean shutdown = false;
 
@@ -48,7 +49,10 @@ public class GZHRequestService implements Runnable, Closeable {
                 } else {
                     responseContent = response.body().string();
                 }
-                GZHAnalyse.analyseRsp(responseContent, call.request().url().toString());
+                if (GZHAnalyse.analyseRsp(responseContent, call.request().url().toString())) {
+                    String uin = GZHAnalyse.getUinFromUrl(call.request().url().query());
+                    logger.warn("uin:{} 获取历史cookie失效", uin);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
