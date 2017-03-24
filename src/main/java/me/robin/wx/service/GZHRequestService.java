@@ -54,26 +54,31 @@ public class GZHRequestService implements Runnable, Closeable {
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
+
+            String url = call.request().url().toString();
+
+            String responseContent;
             try {
-                String responseContent;
                 if ("deflate".equalsIgnoreCase(response.header("Content-Encoding"))) {
                     responseContent = tranInflaterInputStream(response.body().bytes());
                 } else {
                     responseContent = response.body().string();
                 }
-
-                String url = call.request().url().toString();
-
-                if (GZHAnalyse.analyseRsp(responseContent, url)) {
-                    String uin = GZHAnalyse.getUinFromUrl(url);
-                    logger.warn("uin:{} 获取历史cookie失效", uin);
-                    GZHUinClientBinder.lock(uin);
-                    gzhUinCookieInterceptor.clear(uin);
-                }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("公众号请求内容异常", e);
+                String biz = GZHAnalyse.getBizFromUrl(url);
+                String fromMsgId = GZHAnalyse.getFromMsgIdFromUrl(url);
+                BizQueueManager.INS.offerNewTask(biz, fromMsgId);
+                return;
             } finally {
                 IOUtils.closeQuietly(response);
+            }
+
+            if (GZHAnalyse.analyseRsp(responseContent, url)) {
+                String uin = GZHAnalyse.getUinFromUrl(url);
+                logger.warn("uin:{} 获取历史cookie失效", uin);
+                GZHUinClientBinder.lock(uin);
+                gzhUinCookieInterceptor.clear(uin);
             }
         }
     };
