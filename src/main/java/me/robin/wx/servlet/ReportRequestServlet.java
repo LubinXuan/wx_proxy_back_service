@@ -7,6 +7,7 @@ import me.robin.wx.util.GZHUinClientBinder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,15 +22,11 @@ import java.io.IOException;
 @WebServlet(name = "ReportRequestServlet", value = "/report")
 public class ReportRequestServlet extends HttpServlet {
 
-    private final GZHRequestService gzhRequestService = new GZHRequestService();
-
-    private Thread monitorThread;
+    private GZHRequestService gzhRequestService;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
-        monitorThread = new Thread(gzhRequestService);
-        monitorThread.start();
+    public void init(ServletConfig config) throws ServletException {
+        gzhRequestService = (GZHRequestService) config.getServletContext().getAttribute(GZHRequestService.class.getName());
     }
 
     @Override
@@ -48,12 +45,5 @@ public class ReportRequestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         this.doPost(req, resp);
-    }
-
-    @Override
-    public void destroy() {
-        IOUtils.closeQuietly(gzhRequestService);
-        monitorThread.interrupt();
-        super.destroy();
     }
 }
