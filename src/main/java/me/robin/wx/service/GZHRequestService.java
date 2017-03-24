@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import me.robin.wx.util.GZHHistoryUrl;
+import me.robin.wx.util.GZHUinClientBinder;
 import me.robin.wx.util.GZHUinCookieInterceptor;
 import okhttp3.*;
 import org.apache.commons.io.IOUtils;
@@ -52,6 +53,7 @@ public class GZHRequestService implements Runnable, Closeable {
                 if (GZHAnalyse.analyseRsp(responseContent, call.request().url().toString())) {
                     String uin = GZHAnalyse.getUinFromUrl(call.request().url().query());
                     logger.warn("uin:{} 获取历史cookie失效", uin);
+                    GZHUinClientBinder.lock(uin);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

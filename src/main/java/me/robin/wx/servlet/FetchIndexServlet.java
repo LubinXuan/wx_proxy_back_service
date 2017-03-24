@@ -1,6 +1,7 @@
 package me.robin.wx.servlet;
 
 import me.robin.wx.service.BizQueueManager;
+import me.robin.wx.util.GZHUinClientBinder;
 import me.robin.wx.util.ResUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutableTriple;
@@ -31,7 +32,8 @@ public class FetchIndexServlet extends HttpServlet {
             resp.setStatus(403);
             return;
         }
-        MutableTriple<String, Long, String> biz = BizQueueManager.INS.fetchNextBiz();
+
+        MutableTriple<String, Long, String> biz = BizQueueManager.INS.fetchNextBiz(!GZHUinClientBinder.isLocked(req.getHeader("client")));
         ResUtil.writeJson(req, resp, new HashMap<String, String>() {{
             if (null != biz) {
                 logger.info("dispatch biz:{}   fromMsgId:{}", biz.getLeft(), biz.getRight());

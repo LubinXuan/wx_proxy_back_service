@@ -17,7 +17,10 @@ public enum BizQueueManager {
 
     INS;
 
+    //最新列表任务
     private BlockingQueue<MutableTriple<String, Long, String>> bizQueue = new LinkedBlockingQueue<>();
+    //历史列表任务
+    private BlockingQueue<MutableTriple<String, Long, String>> hisBizQueue = new LinkedBlockingQueue<>();
 
     private BlockingQueue<MutableTriple<String, Long, String>> dispatchTime = new LinkedBlockingQueue<>();
 
@@ -32,7 +35,11 @@ public enum BizQueueManager {
                 try {
                     MutableTriple<String, Long, String> triple = dispatchTime.take();
                     if (triple.getMiddle() + LIMIT < System.currentTimeMillis()) {
-                        bizQueue.offer(triple);
+                        if (StringUtils.isNotBlank(triple.getRight())) {
+                            hisBizQueue.offer(triple);
+                        } else {
+                            bizQueue.offer(triple);
+                        }
                     } else {
                         dispatchTime.offer(triple);
                     }
@@ -49,8 +56,11 @@ public enum BizQueueManager {
         }).start();
     }
 
-    public MutableTriple<String, Long, String> fetchNextBiz() {
+    public MutableTriple<String, Long, String> fetchNextBiz(boolean history) {
         MutableTriple<String, Long, String> triple = bizQueue.poll();
+        if (null == triple && history) {
+            triple = hisBizQueue.poll();
+        }
         if (null != triple) {
             triple.setMiddle(System.currentTimeMillis());
             dispatchTime.offer(triple);
@@ -74,6 +84,10 @@ public enum BizQueueManager {
         if (StringUtils.isBlank(biz)) {
             return;
         }
-        bizQueue.offer(new MutableTriple<>(biz, null, fromMsgId));
+        if (StringUtils.isNotBlank(fromMsgId)) {
+            hisBizQueue.offer(new MutableTriple<>(biz, null, fromMsgId));
+        } else {
+            bizQueue.offer(new MutableTriple<>(biz, null, fromMsgId));
+        }
     }
 }

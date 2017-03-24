@@ -1,7 +1,9 @@
 package me.robin.wx.servlet;
 
 import me.robin.wx.service.BizQueueManager;
+import me.robin.wx.service.GZHAnalyse;
 import me.robin.wx.service.GZHRequestService;
+import me.robin.wx.util.GZHUinClientBinder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,6 +41,7 @@ public class ReportRequestServlet extends HttpServlet {
             String biz = StringUtils.substringBetween(location, "__biz=", "&");
             String fromMsgId = StringUtils.substringBetween(location, "frommsgid=", "&");
             BizQueueManager.INS.report(biz, fromMsgId);
+            GZHUinClientBinder.bind(req.getHeader("client"), GZHAnalyse.getUinFromUrl(location));
         }
     }
 

@@ -3,6 +3,8 @@ package me.robin.wx.util;
 import me.robin.wx.service.GZHAnalyse;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,6 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * 公众号UinCookie处理
  */
 public class GZHUinCookieInterceptor implements Interceptor {
+
+    private static final Logger logger = LoggerFactory.getLogger(GZHUinCookieInterceptor.class);
+
     private final Map<String, Map<String, String>> uinCookieMap = new ConcurrentHashMap<>();
 
     @Override
@@ -54,6 +59,8 @@ public class GZHUinCookieInterceptor implements Interceptor {
                         return stringStringMap;
                     });
                 }
+                logger.info("find new cookie for uin:{}", uin);
+                GZHUinClientBinder.release(uin);
             }
         } else {
             response = chain.proceed(chain.request());
