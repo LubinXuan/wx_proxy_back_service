@@ -6,6 +6,7 @@ import com.alibaba.fastjson.util.TypeUtils;
 import me.robin.wx.util.GZHHistoryUrl;
 import me.robin.wx.util.GZHUinClientBinder;
 import me.robin.wx.util.GZHUinCookieInterceptor;
+import me.robin.wx.util.InflaterUtil;
 import okhttp3.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +61,7 @@ public class GZHRequestService implements Runnable, Closeable {
             String responseContent;
             try {
                 if ("deflate".equalsIgnoreCase(response.header("Content-Encoding"))) {
-                    responseContent = tranInflaterInputStream(response.body().bytes());
+                    responseContent = InflaterUtil.tranInflaterInputStream(response.body().bytes());
                 } else {
                     responseContent = response.body().string();
                 }
@@ -117,34 +118,5 @@ public class GZHRequestService implements Runnable, Closeable {
     @Override
     public void close() throws IOException {
         this.shutdown = true;
-    }
-
-    private boolean isZlibHeader(byte[] bytes) {
-        //deal with java stupidity : convert to signed int before comparison
-        char byte1 = (char) (bytes[0] & 0xFF);
-        char byte2 = (char) (bytes[1] & 0xFF);
-
-        return byte1 == 0x78 && (byte2 == 0x01 || byte2 == 0x9c || byte2 == 0xDA);
-    }
-
-    private String tranInflaterInputStream(byte[] encBytes) throws IOException {
-        Inflater inflator = new Inflater(true);
-        boolean isZlibHeader = isZlibHeader(encBytes);
-        inflator.setInput(encBytes, isZlibHeader ? 2 : 0, isZlibHeader ? encBytes.length - 2 : encBytes.length);
-        byte[] buf = new byte[4096];
-        int nbytes = 0;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        do {
-            try {
-                nbytes = inflator.inflate(buf);
-                if (nbytes > 0) {
-                    bos.write(buf, 0, nbytes);
-                }
-            } catch (DataFormatException e) {
-                //handle error
-            }
-        } while (nbytes > 0);
-        inflator.end();
-        return bos.toString();
     }
 }
