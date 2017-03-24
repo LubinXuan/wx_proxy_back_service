@@ -18,6 +18,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -31,14 +32,18 @@ public class GZHRequestService implements Runnable, Closeable {
 
     private LinkedBlockingQueue<ImmutablePair<String, String>> requestQueue = new LinkedBlockingQueue<>();
 
-    private OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new GZHUinCookieInterceptor()).build();
+    private OkHttpClient client = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS).connectTimeout(60, TimeUnit.SECONDS).addInterceptor(new GZHUinCookieInterceptor()).build();
 
     private volatile boolean shutdown = false;
 
     private Callback callback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
-            logger.error("公众号历史请求失败:{}", call.request().url().toString(), e);
+            String url = call.request().url().toString();
+            logger.error("公众号历史请求失败:{}", url, e);
+            String biz = GZHAnalyse.getBizFromUrl(url);
+            String fromMsgId = GZHAnalyse.getFromMsgIdFromUrl(url);
+            BizQueueManager.INS.offerNewTask(biz, fromMsgId);
         }
 
         @Override

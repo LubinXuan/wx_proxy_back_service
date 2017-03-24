@@ -38,6 +38,14 @@ public class GZHAnalyse {
         return StringUtils.substringBetween(url, "uin=", "&");
     }
 
+    public static String getBizFromUrl(String location){
+        return StringUtils.substringBetween(location, "__biz=", "&");
+    }
+
+    public static String getFromMsgIdFromUrl(String location){
+        return StringUtils.substringBetween(location, "frommsgid=", "&");
+    }
+
     /**
      *
      * @param msgList

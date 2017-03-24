@@ -38,8 +38,8 @@ public class ReportRequestServlet extends HttpServlet {
         String headers = req.getParameter("headers");
         if (StringUtils.isNotBlank(location)) {
             gzhRequestService.submit(location, headers);
-            String biz = StringUtils.substringBetween(location, "__biz=", "&");
-            String fromMsgId = StringUtils.substringBetween(location, "frommsgid=", "&");
+            String biz = GZHAnalyse.getBizFromUrl(location);
+            String fromMsgId = GZHAnalyse.getFromMsgIdFromUrl(location);
             BizQueueManager.INS.report(biz, fromMsgId);
             GZHUinClientBinder.bind(req.getHeader("client"), GZHAnalyse.getUinFromUrl(location));
         }
