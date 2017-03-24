@@ -35,6 +35,7 @@ public class HttpRspReqFilter implements Filter {
             if (StringUtils.isBlank(client)) {
                 client = request.getRemoteAddr();
             }
+            request.setAttribute("client", client);
             logger.info("客户端请求  {}  {}", client, ((HttpServletRequest) request).getServletPath());
         }
 

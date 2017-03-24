@@ -33,7 +33,7 @@ public class FetchIndexServlet extends HttpServlet {
             return;
         }
 
-        MutableTriple<String, Long, String> biz = BizQueueManager.INS.fetchNextBiz(!GZHUinClientBinder.isLocked(req.getHeader("client")));
+        MutableTriple<String, Long, String> biz = BizQueueManager.INS.fetchNextBiz(!GZHUinClientBinder.isLocked((String) req.getAttribute("client")));
         ResUtil.writeJson(req, resp, new HashMap<String, String>() {{
             if (null != biz) {
                 logger.info("dispatch biz:{}   fromMsgId:{}", biz.getLeft(), biz.getRight());

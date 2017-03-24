@@ -41,7 +41,7 @@ public class ReportRequestServlet extends HttpServlet {
             String biz = GZHAnalyse.getBizFromUrl(location);
             String fromMsgId = GZHAnalyse.getFromMsgIdFromUrl(location);
             BizQueueManager.INS.report(biz, fromMsgId);
-            GZHUinClientBinder.bind(req.getHeader("client"), GZHAnalyse.getUinFromUrl(location));
+            GZHUinClientBinder.bind((String) req.getAttribute("client"), GZHAnalyse.getUinFromUrl(location));
         }
     }
 
