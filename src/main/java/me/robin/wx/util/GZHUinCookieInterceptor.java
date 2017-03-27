@@ -20,8 +20,6 @@ public class GZHUinCookieInterceptor implements Interceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(GZHUinCookieInterceptor.class);
 
-    private final Map<String, Map<String, String>> uinCookieMap = new ConcurrentHashMap<>();
-
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
@@ -29,10 +27,10 @@ public class GZHUinCookieInterceptor implements Interceptor {
         String uin = GZHAnalyse.getUinFromUrl(httpUrl.query());
         Response response;
         if (StringUtils.isNotBlank(uin)) {
-            if (uinCookieMap.containsKey(uin)) {
+            if (GZHUinCookieStore.hasUin(uin)) {
                 Request.Builder requestBuilder = request.newBuilder();
                 String cookie = request.header("cookie");
-                Map<String, String> cookieMap = uinCookieMap.get(uin);
+                Map<String, String> cookieMap = GZHUinCookieStore.getUinCookie(uin);
                 Map<String, String> _cookieMap = new HashMap<>();
                 if (StringUtils.isNotBlank(cookie)) {
                     String[] cookies = StringUtils.split(cookie, ";");
@@ -42,30 +40,14 @@ public class GZHUinCookieInterceptor implements Interceptor {
                     }
                 }
                 _cookieMap.putAll(cookieMap);
-
-                StringBuilder _cookie = new StringBuilder();
-                for (Map.Entry<String, String> entry : _cookieMap.entrySet()) {
-                    if (_cookie.length() > 0) {
-                        _cookie.append(";");
-                    }
-                    _cookie.append(entry.getKey()).append("=").append(entry.getValue());
-                }
-                requestBuilder.header("cookie", _cookie.toString());
+                requestBuilder.header("cookie", GZHUinCookieStore.buildCookie(_cookieMap));
                 response = chain.proceed(requestBuilder.build());
             } else {
                 response = chain.proceed(chain.request());
             }
             List<Cookie> cookies = Cookie.parseAll(httpUrl, response.headers());
             if (!cookies.isEmpty()) {
-                for (Cookie cookie : cookies) {
-                    uinCookieMap.compute(uin, (s, stringStringMap) -> {
-                        if (null == stringStringMap) {
-                            stringStringMap = new HashMap<>();
-                        }
-                        stringStringMap.put(cookie.name(), cookie.value());
-                        return stringStringMap;
-                    });
-                }
+                GZHUinCookieStore.saveUinCookie(uin, cookies);
                 logger.info("find new cookie for uin:{}", uin);
                 GZHUinClientBinder.release(uin);
             }
@@ -76,6 +58,6 @@ public class GZHUinCookieInterceptor implements Interceptor {
     }
 
     public void clear(String uin) {
-        uinCookieMap.remove(uin);
+        GZHUinCookieStore.deleteUinCookie(uin);
     }
 }
