@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import me.robin.wx.Constants;
-import me.robin.wx.util.GZHHistoryUrl;
-import me.robin.wx.util.GZHUinClientBinder;
-import me.robin.wx.util.GZHUinCookieInterceptor;
-import me.robin.wx.util.InflaterUtil;
+import me.robin.wx.util.*;
 import okhttp3.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +37,7 @@ public class GZHRequestService implements Runnable, Closeable {
             .readTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(gzhUinCookieInterceptor)
+            .addNetworkInterceptor(new GZHRedirectInterceptor())
             .build();
 
     private volatile boolean shutdown = false;

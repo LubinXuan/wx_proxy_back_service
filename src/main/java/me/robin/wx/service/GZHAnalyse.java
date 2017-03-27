@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.alibaba.fastjson.util.TypeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
@@ -75,7 +76,12 @@ public class GZHAnalyse {
 
         boolean isContinue, friend;
 
-        if (StringUtils.contains(StringUtils.lowerCase(msgList), "<title>查看历史消息</title>")) {
+        if (StringUtils.contains(msgList, "<div class=\"profile_info appmsg\">")) {
+            msgList = StringEscapeUtils.unescapeHtml3(msgList);
+            friend = !StringUtils.contains(msgList, "<span class=\"tips\">关注公众帐号，接收更多消息</span>");
+            isContinue = friend;
+            msgList = StringUtils.substringBetween(msgList, "msgList = '", "';\n");
+        } else if (StringUtils.contains(StringUtils.lowerCase(msgList), "<title>查看历史消息</title>")) {
             friend = "1".equals(StringUtils.substringBetween(msgList, "isFriend = \"", "\",\r\n"));
             isContinue = "1".equals(StringUtils.substringBetween(msgList, "isContinue = \"", "\",\r\n"));
             msgList = StringUtils.substringBetween(msgList, "msgList = ", ";\r\n");
@@ -84,7 +90,6 @@ public class GZHAnalyse {
             friend = "1".equals(StringUtils.substringBetween(msgList, "\"is_friend\":", ","));
             isContinue = "1".equals(StringUtils.substringBetween(msgList, "\"is_continue\":", ","));
         }
-
         fromMsgId = getListMinMsgId(msgList, __biz);
 
         logger.info("获取到公众号文章列表 biz:{} url:{}", __biz, url);
