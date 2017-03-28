@@ -44,30 +44,30 @@ public class StartServer {
 
 
             context.setConfigurations(new Configuration[]{
-                    new AnnotationConfiguration(),
                     new WebXmlConfiguration(),
                     new WebInfConfiguration(),
                     new PlusConfiguration(),
                     new MetaInfConfiguration(),
                     new FragmentConfiguration(),
                     new EnvConfiguration(),
-                    new AbstractConfiguration() {
+                    new AnnotationConfiguration() {
                         @Override
                         public void configure(WebAppContext context) throws Exception {
+                            super.configure(context);
                             context.getObjectFactory().clear();
                             context.getObjectFactory().addDecorator(new Decorator() {
                                 private AnnotationIntrospector _introspector = new AnnotationIntrospector();
 
-                                public void registerHandlers(WebAppContext context) {
+                                {
                                     this._introspector.registerHandler(new PostConstructAnnotationHandler(context));
                                     this._introspector.registerHandler(new PreDestroyAnnotationHandler(context));
                                 }
 
-                                void introspect(Object o) {
+                                <T> void introspect(T o) {
                                     this._introspector.introspect(o.getClass());
                                 }
 
-                                public Object decorate(Object o) {
+                                public <T> T decorate(T o) {
                                     this.introspect(o);
                                     return o;
                                 }
