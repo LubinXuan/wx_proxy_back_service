@@ -1,9 +1,10 @@
 package me.robin.wx.listener;
 
-import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.ServletContextEvent;
-import javax.servlet.annotation.WebInitParam;
+import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 /**
@@ -11,10 +12,19 @@ import javax.servlet.annotation.WebListener;
  * 初始化组件
  */
 @WebListener
-public class AppContextListener extends ContextLoaderListener {
+public class AppContextListener implements ServletContextListener {
+
+    private ClassPathXmlApplicationContext ctx;
+
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        event.getServletContext().setInitParameter("contextConfigLocation", "classpath*:application.xml");
-        super.contextInitialized(event);
+        this.ctx = new ClassPathXmlApplicationContext("classpath*:application.xml");
+        this.ctx.start();
+        event.getServletContext().setAttribute(AppContextListener.class.getName(), this.ctx);
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        this.ctx.stop();
     }
 }
