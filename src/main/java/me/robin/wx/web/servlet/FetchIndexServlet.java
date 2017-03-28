@@ -1,4 +1,4 @@
-package me.robin.wx.servlet;
+package me.robin.wx.web.servlet;
 
 import me.robin.wx.service.BizQueueManager;
 import me.robin.wx.util.GZHUinClientBinder;
@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

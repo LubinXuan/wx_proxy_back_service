@@ -1,4 +1,4 @@
-package me.robin.wx.filter;
+package me.robin.wx.web.filter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

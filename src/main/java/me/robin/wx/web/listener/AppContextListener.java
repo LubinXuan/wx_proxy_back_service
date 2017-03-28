@@ -1,6 +1,5 @@
-package me.robin.wx.listener;
+package me.robin.wx.web.listener;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.ServletContextEvent;

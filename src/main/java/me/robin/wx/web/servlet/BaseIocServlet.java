@@ -1,6 +1,6 @@
-package me.robin.wx.servlet;
+package me.robin.wx.web.servlet;
 
-import me.robin.wx.listener.AppContextListener;
+import me.robin.wx.web.listener.AppContextListener;
 import me.robin.wx.util.InjectUtils;
 import org.springframework.context.ApplicationContext;
 
