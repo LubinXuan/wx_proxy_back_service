@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
 public class InjectUtils {
     public static void inject(Object object, ApplicationContext context) throws Exception {
         Class clazz = object.getClass();
-        while (!clazz.isInterface()) {
+        while (null != clazz && !clazz.isInterface()) {
             Field[] fields = clazz.getDeclaredFields();
             if (null != fields) {
                 for (Field field : fields) {

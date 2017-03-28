@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
@@ -30,6 +31,8 @@ public class GZHRequestService implements Runnable, Closeable {
     private LinkedBlockingQueue<ImmutablePair<String, String>> requestQueue = new LinkedBlockingQueue<>();
 
     private GZHUinCookieInterceptor gzhUinCookieInterceptor = new GZHUinCookieInterceptor();
+
+    private Thread deamon;
 
     private OkHttpClient client = new OkHttpClient.Builder()
             .readTimeout(60, TimeUnit.SECONDS)
@@ -120,5 +123,18 @@ public class GZHRequestService implements Runnable, Closeable {
     @Override
     public void close() throws IOException {
         this.shutdown = true;
+        this.deamon.interrupt();
+        try {
+            this.deamon.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @PostConstruct
+    private void init() {
+        this.deamon = new Thread(this);
+        this.deamon.start();
     }
 }
