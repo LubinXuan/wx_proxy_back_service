@@ -7,9 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutableTriple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,8 +21,8 @@ import java.util.HashMap;
  * Created by xuanlubin on 2017/2/14.
  * 微信客户端获取公众号列表key,pass_ticket任务
  */
-@WebServlet(name = "FetchIndexServlet", value = "/fetch")
-public class FetchIndexServlet extends BaseIocServlet {
+@Controller("/fetch")
+public class FetchIndexServlet extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(FetchIndexServlet.class);
 

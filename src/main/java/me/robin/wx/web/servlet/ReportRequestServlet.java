@@ -5,10 +5,12 @@ import me.robin.wx.service.GZHAnalyse;
 import me.robin.wx.service.GZHRequestService;
 import me.robin.wx.util.GZHUinClientBinder;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,8 +19,8 @@ import java.io.IOException;
  * Created by xuanlubin on 2017/2/14.
  * 代理提交微信客户端处理好的url,以及请求头信息
  */
-@WebServlet(name = "ReportRequestServlet", value = "/report")
-public class ReportRequestServlet extends BaseIocServlet {
+@Controller("/report")
+public class ReportRequestServlet extends HttpServlet {
 
     @Resource
     private GZHRequestService gzhRequestService;

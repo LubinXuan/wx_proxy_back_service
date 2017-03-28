@@ -7,8 +7,6 @@
        default-lazy-init="false">
 
 
-    <context:component-scan base-package="me.robin.wx">
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-    </context:component-scan>
+    <context:component-scan base-package="me.robin.wx.web"/>
 
 </beans>

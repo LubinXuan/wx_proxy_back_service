@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * Created by xuanlubin on 2017/3/23.
  * 公众号请求任务调度
  */
-@ManagedBean
+@Service
 public class GZHRequestService implements Runnable, Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(GZHRequestService.class);

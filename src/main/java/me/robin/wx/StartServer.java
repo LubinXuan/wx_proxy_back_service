@@ -49,8 +49,8 @@ public class StartServer {
                     new PlusConfiguration(),
                     new MetaInfConfiguration(),
                     new FragmentConfiguration(),
-                    new EnvConfiguration(),
-                    new AnnotationConfiguration() {
+                    new EnvConfiguration(),new AnnotationConfiguration()
+                    /*new AnnotationConfiguration() {
                         @Override
                         public void configure(WebAppContext context) throws Exception {
                             super.configure(context);
@@ -78,7 +78,7 @@ public class StartServer {
                                 }
                             });
                         }
-                    }
+                    }*/
             });
             context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*");
             // 设置上下文路径
