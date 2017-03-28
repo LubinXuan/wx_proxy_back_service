@@ -7,6 +7,7 @@ import me.robin.wx.util.GZHUinClientBinder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,14 +21,10 @@ import java.io.IOException;
  * 代理提交微信客户端处理好的url,以及请求头信息
  */
 @WebServlet(name = "ReportRequestServlet", value = "/report")
-public class ReportRequestServlet extends HttpServlet {
+public class ReportRequestServlet extends BaseIocServlet {
 
+    @Resource
     private GZHRequestService gzhRequestService;
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        gzhRequestService = (GZHRequestService) config.getServletContext().getAttribute(GZHRequestService.class.getName());
-    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

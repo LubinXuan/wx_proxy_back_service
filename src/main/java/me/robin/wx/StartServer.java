@@ -1,10 +1,11 @@
 package me.robin.wx;
 
 import me.robin.wx.service.BizQueueManager;
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
+import org.eclipse.jetty.annotations.*;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.Decorator;
 import org.eclipse.jetty.webapp.*;
 
 import java.util.Timer;
@@ -22,7 +23,7 @@ public class StartServer {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if(BizQueueManager.INS.isEmpty()){
+                    if (BizQueueManager.INS.isEmpty()) {
                         BizQueueManager.INS.offerNewTask("MjM5MTgyODQ2Mw==");
                         BizQueueManager.INS.offerNewTask("MzAxMzM4MTk2Nw==");
                         BizQueueManager.INS.offerNewTask("MzAxMDQ2OTA1OQ==");
@@ -40,11 +41,44 @@ public class StartServer {
             context.setResourceBase("E:\\project\\Bullbat-Crawl\\wx_proxy_back_service\\src\\main\\webapp");
             // 设置描述符位置
             context.setDescriptor("./webapp/WEB-INF/web.xml");
+
+
             context.setConfigurations(new Configuration[]{
-                    new AnnotationConfiguration(), new WebXmlConfiguration(),
+                    new AnnotationConfiguration(),
+                    new WebXmlConfiguration(),
                     new WebInfConfiguration(),
-                    new PlusConfiguration(), new MetaInfConfiguration(),
-                    new FragmentConfiguration(), new EnvConfiguration()
+                    new PlusConfiguration(),
+                    new MetaInfConfiguration(),
+                    new FragmentConfiguration(),
+                    new EnvConfiguration(),
+                    new AbstractConfiguration() {
+                        @Override
+                        public void configure(WebAppContext context) throws Exception {
+                            context.getObjectFactory().clear();
+                            context.getObjectFactory().addDecorator(new Decorator() {
+                                private AnnotationIntrospector _introspector = new AnnotationIntrospector();
+
+                                public void registerHandlers(WebAppContext context) {
+                                    this._introspector.registerHandler(new PostConstructAnnotationHandler(context));
+                                    this._introspector.registerHandler(new PreDestroyAnnotationHandler(context));
+                                }
+
+                                void introspect(Object o) {
+                                    this._introspector.introspect(o.getClass());
+                                }
+
+                                public Object decorate(Object o) {
+                                    this.introspect(o);
+                                    return o;
+                                }
+
+                                @Override
+                                public void destroy(Object o) {
+
+                                }
+                            });
+                        }
+                    }
             });
             context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*");
             // 设置上下文路径

@@ -7,24 +7,22 @@ import me.robin.wx.Constants;
 import me.robin.wx.util.*;
 import okhttp3.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
+import javax.annotation.ManagedBean;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
 
 /**
  * Created by xuanlubin on 2017/3/23.
  * 公众号请求任务调度
  */
+@ManagedBean
 public class GZHRequestService implements Runnable, Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(GZHRequestService.class);

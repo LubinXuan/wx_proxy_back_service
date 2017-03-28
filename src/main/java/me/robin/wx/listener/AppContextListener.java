@@ -1,10 +1,9 @@
 package me.robin.wx.listener;
 
-import me.robin.wx.service.GZHRequestService;
-import org.apache.commons.io.IOUtils;
+import org.springframework.web.context.ContextLoaderListener;
 
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebListener;
 
 /**
@@ -12,22 +11,10 @@ import javax.servlet.annotation.WebListener;
  * 初始化组件
  */
 @WebListener
-public class AppContextListener implements ServletContextListener {
-
-    private final GZHRequestService gzhRequestService = new GZHRequestService();
-
-    private Thread monitorThread;
-
+public class AppContextListener extends ContextLoaderListener {
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        monitorThread = new Thread(gzhRequestService);
-        monitorThread.start();
-        sce.getServletContext().setAttribute(GZHRequestService.class.getName(),gzhRequestService);
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        IOUtils.closeQuietly(gzhRequestService);
-        monitorThread.interrupt();
+    public void contextInitialized(ServletContextEvent event) {
+        event.getServletContext().setInitParameter("contextConfigLocation", "classpath*:application.xml");
+        super.contextInitialized(event);
     }
 }

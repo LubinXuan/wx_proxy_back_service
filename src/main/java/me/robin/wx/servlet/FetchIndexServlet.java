@@ -21,7 +21,7 @@ import java.util.HashMap;
  * 微信客户端获取公众号列表key,pass_ticket任务
  */
 @WebServlet(name = "FetchIndexServlet", value = "/fetch")
-public class FetchIndexServlet extends HttpServlet {
+public class FetchIndexServlet extends BaseIocServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(FetchIndexServlet.class);
 

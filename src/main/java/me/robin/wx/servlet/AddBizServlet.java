@@ -15,7 +15,7 @@ import java.io.IOException;
  * 添加公众号Biz
  */
 @WebServlet(name = "AddBizServlet", value = "/add_biz")
-public class AddBizServlet extends HttpServlet {
+public class AddBizServlet extends BaseIocServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String biz = req.getParameter("biz");
