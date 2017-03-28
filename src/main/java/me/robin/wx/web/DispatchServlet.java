@@ -3,6 +3,7 @@ package me.robin.wx.web;
 import me.robin.wx.web.listener.AppContextListener;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.*;
@@ -17,7 +18,7 @@ import java.io.IOException;
 @WebServlet(name = "DispatchServlet", value = "/*", loadOnStartup = 1)
 public class DispatchServlet extends HttpServlet {
 
-    private ApplicationContext wac;
+    private AbstractApplicationContext wac;
 
     @Override
     public void init() throws ServletException {
@@ -31,5 +32,10 @@ public class DispatchServlet extends HttpServlet {
         String servletPath = StringUtils.substringAfter(path, ((HttpServletRequest) req).getContextPath());
         Servlet servlet = this.wac.getBean(servletPath, Servlet.class);
         servlet.service(req, res);
+    }
+
+    @Override
+    public void destroy() {
+        this.wac.close();
     }
 }

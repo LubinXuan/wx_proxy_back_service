@@ -1,5 +1,6 @@
 package me.robin.wx.web.listener;
 
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.ServletContextEvent;
@@ -13,7 +14,7 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 public class AppContextListener implements ServletContextListener {
 
-    private ClassPathXmlApplicationContext ctx;
+    private AbstractApplicationContext ctx;
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
@@ -24,6 +25,6 @@ public class AppContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        this.ctx.stop();
+        this.ctx.close();
     }
 }
