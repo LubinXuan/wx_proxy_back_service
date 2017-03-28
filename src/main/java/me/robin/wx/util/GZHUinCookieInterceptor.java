@@ -24,7 +24,7 @@ public class GZHUinCookieInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         HttpUrl httpUrl = request.url();
-        String uin = GZHAnalyse.getUinFromUrl(httpUrl.query());
+        String uin = GZHAnalyse.getUinFromUrl(httpUrl);
         Response response;
         if (StringUtils.isNotBlank(uin)) {
             if (GZHUinCookieStore.hasUin(uin)) {

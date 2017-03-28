@@ -55,7 +55,7 @@ public class GZHRequestService implements Runnable, Closeable {
         @Override
         public void onResponse(Call call, Response response) throws IOException {
 
-            String url = call.request().url().toString();
+            HttpUrl url = call.request().url();
             String biz = GZHAnalyse.getBizFromUrl(url);
             String responseContent;
             try {
@@ -96,16 +96,16 @@ public class GZHRequestService implements Runnable, Closeable {
     @Override
     public void run() {
         while (!shutdown) {
-            ImmutablePair<String, String> request;
+            ImmutablePair<String, String> requestInfo;
             try {
-                request = requestQueue.take();
+                requestInfo = requestQueue.take();
             } catch (InterruptedException e) {
                 continue;
             }
-            JSONObject headers = JSON.parseObject(request.getRight());
-            String url = request.getLeft();
+            JSONObject headers = JSON.parseObject(requestInfo.getRight());
+            String url = requestInfo.getLeft();
             Request.Builder builder;
-            if (request.getLeft().contains("&frommsgid=")) {
+            if (requestInfo.getLeft().contains("&frommsgid=")) {
                 builder = GZHHistoryUrl.process(url);
             } else {
                 builder = new Request.Builder().url(GZHHistoryUrl.GZH_MP_HOST + url);
@@ -113,8 +113,9 @@ public class GZHRequestService implements Runnable, Closeable {
             for (Map.Entry<String, Object> entry : headers.entrySet()) {
                 builder.header(entry.getKey(), TypeUtils.castToString(entry.getValue()));
             }
-
-            client.newCall(builder.get().build()).enqueue(callback);
+            Request request = builder.get().build();
+            logger.info("请求公众号历史:{} {}", GZHAnalyse.getBizFromUrl(request.url()), GZHAnalyse.getFromMsgIdFromUrl(request.url()));
+            client.newCall(request).enqueue(callback);
         }
     }
 

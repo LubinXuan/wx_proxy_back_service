@@ -5,12 +5,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.alibaba.fastjson.util.TypeUtils;
+import okhttp3.HttpUrl;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -36,16 +39,36 @@ public class GZHAnalyse {
     private static final Map<String, ImmutablePair<AtomicLong, AtomicLong>> recordMap = new ConcurrentHashMap<>();
 
 
+    private static String decodeUrlParamter(String val) {
+        try {
+            return URLDecoder.decode(val, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            return val;
+        }
+    }
+
     public static String getUinFromUrl(String url) {
-        return StringUtils.substringBetween(url, "uin=", "&");
+        return decodeUrlParamter(StringUtils.substringBetween(url, "uin=", "&"));
+    }
+
+    public static String getUinFromUrl(HttpUrl url) {
+        return url.queryParameter("uin");
     }
 
     public static String getBizFromUrl(String location) {
-        return StringUtils.substringBetween(location, "__biz=", "&");
+        return decodeUrlParamter(StringUtils.substringBetween(location, "__biz=", "&"));
+    }
+
+    public static String getBizFromUrl(HttpUrl location) {
+        return location.queryParameter("__biz");
     }
 
     public static String getFromMsgIdFromUrl(String location) {
         return StringUtils.substringBetween(location, "frommsgid=", "&");
+    }
+
+    public static String getFromMsgIdFromUrl(HttpUrl location) {
+        return location.queryParameter("frommsgid");
     }
 
     /**
@@ -53,12 +76,12 @@ public class GZHAnalyse {
      * @param url
      * @return 返回true 表示cookie失效
      */
-    public static boolean analyseRsp(String msgList, String url) {
+    public static boolean analyseRsp(String msgList, HttpUrl url) {
         String fromMsgId = null;
-        String __biz = StringUtils.substringBetween(url, "__biz=", "&");
+        String __biz = getBizFromUrl(url);
 
         if (StringUtils.contains(msgList, "no session")) {
-            BizQueueManager.INS.offerNewTask(__biz, StringUtils.substringBetween(url, "frommsgid=", "&"));
+            BizQueueManager.INS.offerNewTask(__biz, getFromMsgIdFromUrl(url));
             return true;
         }
 
