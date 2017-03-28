@@ -52,6 +52,7 @@ public class DispatchServlet extends HttpServlet {
             initServlet(servlet);
         } else if (!init.containsKey(servletPath)) {
             initServlet(servlet);
+            init.put(servletPath, true);
         }
         return servlet;
     }
