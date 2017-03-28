@@ -32,7 +32,7 @@ public class GZHRequestService implements Runnable, Closeable {
 
     private GZHUinCookieInterceptor gzhUinCookieInterceptor = new GZHUinCookieInterceptor();
 
-    private Thread deamon;
+    private Thread daemon;
 
     private OkHttpClient client = new OkHttpClient.Builder()
             .readTimeout(60, TimeUnit.SECONDS)
@@ -123,9 +123,9 @@ public class GZHRequestService implements Runnable, Closeable {
     @Override
     public void close() throws IOException {
         this.shutdown = true;
-        this.deamon.interrupt();
+        this.daemon.interrupt();
         try {
-            this.deamon.join();
+            this.daemon.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -134,7 +134,7 @@ public class GZHRequestService implements Runnable, Closeable {
 
     @PostConstruct
     private void init() {
-        this.deamon = new Thread(this);
-        this.deamon.start();
+        this.daemon = new Thread(this);
+        this.daemon.start();
     }
 }
