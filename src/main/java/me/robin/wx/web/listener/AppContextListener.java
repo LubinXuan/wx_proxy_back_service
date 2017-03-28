@@ -17,7 +17,7 @@ public class AppContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        this.ctx = new ClassPathXmlApplicationContext("classpath*:application.xml");
+        this.ctx = new ClassPathXmlApplicationContext(event.getServletContext().getInitParameter("contextConfigLocation"));
         this.ctx.start();
         event.getServletContext().setAttribute(AppContextListener.class.getName(), this.ctx);
     }
