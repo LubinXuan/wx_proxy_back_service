@@ -42,7 +42,7 @@ public class DispatchServlet extends HttpServlet {
             Servlet servlet = findServlet(servletPath);
             servlet.service(req, res);
         } catch (NoSuchBeanDefinitionException e) {
-            ((HttpServletResponse) res).setStatus(404);
+            ((HttpServletResponse) res).sendError(404);
         }
     }
 
