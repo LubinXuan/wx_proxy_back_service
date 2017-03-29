@@ -36,7 +36,7 @@ public class HttpRspReqFilter implements Filter {
                 client = request.getRemoteAddr();
             }
             request.setAttribute("client", client);
-            logger.debug("客户端请求  {}  {}", client, ((HttpServletRequest) request).getServletPath());
+            logger.debug("客户端请求  {}  {}", client, ((HttpServletRequest) request).getRequestURI());
         }
 
         request.setCharacterEncoding("utf-8");
