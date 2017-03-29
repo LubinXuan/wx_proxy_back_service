@@ -24,9 +24,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @WebServlet(name = "DispatchServlet", value = "/*", loadOnStartup = 1)
 public class DispatchServlet extends HttpServlet {
 
+    //spring web context
     private AbstractApplicationContext wac;
 
     private Map<String, Boolean> init = new ConcurrentHashMap<>();
+
+    //servlet config cache map
+    private Map<String, ServletConfig> configMap = new ConcurrentHashMap<>();
 
     @Override
     public void init() throws ServletException {
@@ -58,34 +62,37 @@ public class DispatchServlet extends HttpServlet {
     }
 
     private void initServlet(Servlet servlet) throws ServletException {
-        WebInitParam[] initParams = servlet.getClass().getAnnotationsByType(WebInitParam.class);
-        ConcurrentHashMap<String, String> parameterMap = new ConcurrentHashMap<>();
-        if (null != initParams && initParams.length > 0) {
-            for (WebInitParam initParam : initParams) {
-                parameterMap.put(initParam.name(), initParam.value());
+        ServletConfig servletConfig = configMap.computeIfAbsent(servlet.getClass().getName(), s -> {
+            WebInitParam[] initParams = servlet.getClass().getAnnotationsByType(WebInitParam.class);
+            ConcurrentHashMap<String, String> parameterMap = new ConcurrentHashMap<>();
+            if (null != initParams && initParams.length > 0) {
+                for (WebInitParam initParam : initParams) {
+                    parameterMap.put(initParam.name(), initParam.value());
+                }
             }
-        }
-        ServletConfig servletConfig = new ServletConfig() {
-            @Override
-            public String getServletName() {
-                return servlet.getClass().getSimpleName();
-            }
+            return new ServletConfig() {
+                @Override
+                public String getServletName() {
+                    return servlet.getClass().getSimpleName();
+                }
 
-            @Override
-            public ServletContext getServletContext() {
-                return getServletConfig().getServletContext();
-            }
+                @Override
+                public ServletContext getServletContext() {
+                    return getServletConfig().getServletContext();
+                }
 
-            @Override
-            public String getInitParameter(String name) {
-                return parameterMap.get(name);
-            }
+                @Override
+                public String getInitParameter(String name) {
+                    return parameterMap.get(name);
+                }
 
-            @Override
-            public Enumeration<String> getInitParameterNames() {
-                return parameterMap.keys();
-            }
-        };
+                @Override
+                public Enumeration<String> getInitParameterNames() {
+                    return parameterMap.keys();
+                }
+            };
+        });
+
         servlet.init(servletConfig);
     }
 
