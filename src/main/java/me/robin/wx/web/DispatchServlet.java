@@ -64,10 +64,10 @@ public class DispatchServlet extends HttpServlet {
     private void initServlet(Servlet servlet) throws ServletException {
         ServletConfig servletConfig = configMap.computeIfAbsent(servlet.getClass().getName(), s -> {
             WebInitParam[] initParams = servlet.getClass().getAnnotationsByType(WebInitParam.class);
-            ConcurrentHashMap<String, String> parameterMap = new ConcurrentHashMap<>();
+            ConcurrentHashMap<String, WebInitParam> parameterMap = new ConcurrentHashMap<>();
             if (null != initParams && initParams.length > 0) {
                 for (WebInitParam initParam : initParams) {
-                    parameterMap.put(initParam.name(), initParam.value());
+                    parameterMap.put(initParam.name(), initParam);
                 }
             }
             return new ServletConfig() {
@@ -83,7 +83,7 @@ public class DispatchServlet extends HttpServlet {
 
                 @Override
                 public String getInitParameter(String name) {
-                    return parameterMap.get(name);
+                    return parameterMap.get(name).name();
                 }
 
                 @Override
