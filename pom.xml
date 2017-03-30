@@ -10,9 +10,10 @@
     <packaging>war</packaging>
 
     <properties>
-        <logback.version>1.1.7</logback.version>
+        <logback.version>1.1.9</logback.version>
         <junit.version>4.12</junit.version>
         <jdk.version>1.8</jdk.version>
+        <activeMq.version>5.14.0</activeMq.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <web.scope>compile</web.scope>
     </properties>
@@ -64,6 +65,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>${activeMq.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
             <version>9.3.12.v20160915</version>
@@ -103,11 +116,7 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.12</version>
-        </dependency>
+
     </dependencies>
 
     <build>

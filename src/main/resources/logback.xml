@@ -7,11 +7,20 @@
             <pattern>%d{MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+
+    <appender name="logJms" class="ch.qos.logback.classic.net.JMSQueueAppender">
+        <InitialContextFactoryName>org.apache.activemq.jndi.ActiveMQInitialContextFactory</InitialContextFactoryName>
+        <ProviderURL>failover:(tcp://172.16.2.16:61618)</ProviderURL>
+        <QueueConnectionFactoryBindingName>QueueConnectionFactory</QueueConnectionFactoryBindingName>
+        <QueueBindingName>dynamicQueues/wx_proxy_back_service_log</QueueBindingName>
+    </appender>
+
     <logger name="org.apache">
         <level value="warn"/>
     </logger>
 
     <root level="info">
         <appender-ref ref="console"/>
+        <appender-ref ref="logJms"/>
     </root>
 </configuration>
